@@ -1,26 +1,3 @@
-Here is a **clean, polished, GitHub-optimized README.md** with badges, sections, emoji design, and perfect formatting for GitHub.
-You can copy-paste this directly into your repository.
-
----
-
-# 📄 Resume Keyword Analyzer
-
-### *Optimize Your Resume for Any Job — Instantly.*
-
-<p align="center">
-  <img src="/frontend/assets/images.jfif" width="380" style="border-radius:12px;">
-</p>
-
-<p align="center">
-  <b>Built with Node.js · Express · SQLite · HTML · CSS · JavaScript</b>
-</p>
-
-<p align="center">
-  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white"></a>
-  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express.js-4+-black?logo=express"></a>
-  <a href="https://www.sqlite.org/"><img src="https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite"></a>
-  <img src="https://img.shields.io/badge/License-MIT-blue">
-</p>
 
 ---
 
