@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Analysis History — Resume Keyword Analyzer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #fff;
+      --muted: #6b7280;
+      --primary: #0b63ff;
+      --radius: 12px;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #071025;
+      --surface: #071827;
+      --muted: #9aa4b2;
+      --primary: #4da3ff;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--bg);
+      color: inherit;
+      margin: 0;
+      padding: 28px
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #77b8ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 18px
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.06)
+    }
+
+    .thumb {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #eceff6
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .btn {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: transparent;
+      cursor: pointer
+    }
+
+    /* modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal.open {
+      display: flex
+    }
+
+    .modal-content {
+      width: 90%;
+      max-width: 800px;
+      background: var(--surface);
+      padding: 18px;
+      border-radius: 12px;
+      max-height: 80vh;
+      overflow: auto
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.06)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">R</div>
+        <div>
+          <h2 style="margin:0">Analysis History</h2>
+          <div class="muted" style="font-size:14px">View your past resume analyses</div>
+        </div>
+      </div>
+      <div>
+        <a href="index.html" class="btn">Back to Analyzer</a>
+      </div>
+    </header>
+
+    <div id="list" class="grid"></div>
+  </div>
+
+  <!-- modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeModal" class="btn" style="float:right">Close</button>
+      <h3 id="modalTitle">Analysis details</h3>
+      <div id="modalMeta" class="muted"></div>
+      <h4 style="margin-top:12px">Matched</h4>
+      <div id="modalMatched" class="chips"></div>
+      <h4 style="margin-top:12px">Missing</h4>
+      <div id="modalMissing" class="chips"></div>
+      <h4 style="margin-top:12px">All extracted</h4>
+      <div id="modalAll" class="chips"></div>
+    </div>
+  </div>
+
+  <script>
+    const USER_ID = localStorage.getItem("rka_userId");
+
+    function formatDate(dt) {
+      const d = new Date(dt);
+
+      // Convert automatically to your local timezone (IST)
+      const options = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+
+      return d.toLocaleString("en-IN", options);
+    }
+
+
+    async function loadHistory() {
+      try {
+        const r = await fetch(`/api/history/${USER_ID}`);
+        if (!r.ok) throw new Error('Network error');
+        const rows = await r.json();
+        const container = document.getElementById('list');
+        container.innerHTML = '';
+
+        if (!rows.length) {
+          container.innerHTML = '<div class="muted">No history yet. Run an analysis to save.</div>';
+          return;
+        }
+
+        rows.forEach(row => {
+          const c = document.createElement('div');
+          c.className = 'card';
+
+          const thumb = document.createElement('img');
+          thumb.className = 'thumb';
+          thumb.src = row.thumbnail || 'assets/hero.png';
+          thumb.onerror = () => { thumb.style.display = 'none'; };
+          c.appendChild(thumb);
+
+          const title = document.createElement('div');
+          title.style.marginTop = '8px';
+          title.innerHTML = `<strong>${row.resume_name}</strong>
+                             <div class="muted">${row.job_title || ''}</div>`;
+          c.appendChild(title);
+
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.innerHTML = `<div class="muted">${formatDate(row.created_at)}</div>`;
+
+          const viewBtn = document.createElement('button');
+          viewBtn.className = 'btn';
+          viewBtn.textContent = 'View';
+          viewBtn.addEventListener('click', () => openDetails(row.id, row));
+          meta.appendChild(viewBtn);
+
+          c.appendChild(meta);
+          container.appendChild(c);
+        });
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('list').innerHTML = '<div class="muted">Failed to load history.</div>';
+      }
+    }
+
+    async function openDetails(id, row) {
+      try {
+        const r = await fetch(`/api/analysis/${id}`);
+        if (!r.ok) throw new Error('Network error');
+        const rows = await r.json();
+
+        const matched = rows.filter(x => x.present_in_resume == 1 && x.present_in_job == 1).map(x => x.keyword);
+        const missing = rows.filter(x => x.present_in_resume == 0 && x.present_in_job == 1).map(x => x.keyword);
+        const all = rows.map(x => x.keyword);
+
+        document.getElementById('modalTitle').textContent = `Analysis #${id} — ${row.resume_name}`;
+        document.getElementById('modalMeta').textContent = `${row.job_title || ''} · ${formatDate(row.created_at)}`;
+
+        const mk = document.getElementById('modalMatched'); mk.innerHTML = ''; matched.forEach(k => { const d = document.createElement('div'); d.className = 'chip'; d.textContent = k; mk.appendChild(d); });
+        const mg = document.getElementById('modalMissing'); mg.innerHTML = ''; missing.forEach(k => { const d = document.createElement('div'); d.className = 'chip'; d.textContent = k; mg.appendChild(d); });
+        const ak = document.getElementById('modalAll'); ak.innerHTML = ''; all.forEach(k => { const d = document.createElement('div'); d.className = 'chip'; d.textContent = k; ak.appendChild(d); });
+
+        document.getElementById('modal').classList.add('open');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load details.');
+      }
+    }
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('modal').classList.remove('open');
+    });
+
+    loadHistory();
+  </script>
+</body>
+
+</html>

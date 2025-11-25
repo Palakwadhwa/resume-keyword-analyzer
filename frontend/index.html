@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resume Keyword Analyzer — Professional Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --muted: #6b7280;
+      --primary: #0b63ff;
+      --accent: #0b63ff;
+      --radius: 12px;
+      --card-elev: 0 6px 18px rgba(13, 24, 40, 0.06);
+      --glass-border: rgba(15,23,42,0.05);
+      --text: #0b1220;
+    }
+
+    /* DARK MODE */
+    :root[data-theme='dark']{
+      --bg: #060b17;
+      --surface: #0a0f1f;
+      --muted: #9aa4b2;
+      --primary: #4da3ff;
+      --accent: #9e6bff;
+      --card-elev: 0 8px 30px rgba(2,6,23,0.7);
+      --glass-border: rgba(255,255,255,0.06);
+      --text: #e6eef8;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background:var(--bg);color:var(--text);
+      margin:0;padding:28px;line-height:1.35
+    }
+    .container{max-width:1200px;margin:0 auto}
+
+    /* -------------------------------------------
+       🔥 FUTURISTIC BUTTON DESIGN (NEW)
+    ------------------------------------------- */
+    .btn, .icon-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid rgba(255,255,255,0.12);
+      transition: 0.25s ease;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      color: var(--text);
+    }
+    .btn:hover,
+    .icon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 14px rgba(0,198,255,0.55);
+      border-color: rgba(0,198,255,0.75);
+    }
+    .btn:active,
+    .icon-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 0 6px rgba(0,198,255,0.35);
+    }
+
+    /* 🌈 GRADIENT PRIMARY BUTTON */
+    .btn.primary{
+      background: linear-gradient(135deg,#4da3ff,#9e6bff);
+      border: none;
+      color:white;
+      box-shadow: 0 4px 18px rgba(120,70,255,0.45);
+    }
+    .btn.primary:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 0 26px rgba(130,70,255,0.75);
+    }
+
+    /* Light mode border fix */
+    :root:not([data-theme='dark']) .btn,
+    :root:not([data-theme='dark']) .icon-btn {
+      border-color: rgba(0,0,0,0.25) !important;
+    }
+
+    /* Topbar */
+    .topbar{display:flex;align-items:center;gap:16px;padding:12px 4px;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:48px;height:48px;border-radius:10px;
+      background:linear-gradient(135deg,#4da3ff,#9e6bff);
+      display:flex;align-items:center;justify-content:center;
+      color:white;font-weight:700;font-size:20px;
+      box-shadow:0 4px 18px rgba(0,0,0,0.35);
+    }
+    .brand h1{font-size:18px;margin:0}
+
+    .top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+    /* Hero */
+    .hero{
+      display:flex;gap:18px;align-items:center;
+      background:var(--surface);
+      padding:18px;border-radius:14px;
+      box-shadow:var(--card-elev);
+      border:1px solid var(--glass-border);
+      margin-bottom:20px
+    }
+    .hero .left{flex:1}
+    .hero .right{width:220px;height:120px;border-radius:8px;overflow:hidden;background:#e8eefb}
+
+    /* Grid */
+    .grid{display:grid;grid-template-columns:360px 1fr;gap:20px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    /* Cards */
+    .card{
+      background:var(--surface);
+      padding:16px;border-radius:12px;
+      box-shadow:var(--card-elev);
+      border:1px solid var(--glass-border)
+    }
+
+    /* Inputs */
+    textarea{
+      width:100%;min-height:140px;border-radius:10px;
+      padding:12px;border:1px solid var(--glass-border);
+      resize:vertical;background:transparent;color:inherit
+    }
+    .file-row{display:flex;gap:8px;align-items:center}
+    input[type=file]{display:none}
+
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      padding:8px 12px;border-radius:999px;
+      border:1px solid var(--glass-border);
+      background:transparent;font-size:13px
+    }
+    .chip.match{
+      background:rgba(77,163,255,0.12);
+      border-color:rgba(77,163,255,0.24);
+      color:var(--primary)
+    }
+    .chip.miss{
+      background:rgba(255,77,77,0.08);
+      border-color:rgba(255,77,77,0.18);
+      color:#ff3b3b
+    }
+
+    /* Tiles */
+    .tiles{display:flex;gap:12px;margin-bottom:12px}
+    .tile{
+      flex:1;padding:12px;border-radius:10px;
+      background:rgba(255,255,255,0.03);
+      text-align:center;border:1px solid var(--glass-border)
+    }
+
+    .muted{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">R</div>
+        <h1>Resume Keyword Analyzer</h1>
+      </div>
+
+      <div class="top-actions">
+        <div class="muted" id="themeLabel">Light</div>
+
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+        <a href="history.html" class="btn">History</a>
+        <button class="btn" id="helpBtn">Help</button>
+        <button class="btn primary" id="analyzeTop">Analyze</button>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="left">
+        <h2>Optimize your resume for every job — faster.</h2>
+        <p>Upload your resume and paste a job description. The analyzer extracts important keywords and shows what's missing.</p>
+      </div>
+      <div class="right">
+        <img id="heroImage" src="assets/images.jfif" style="width:100%;height:100%;object-fit:cover">
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left -->
+      <section class="card">
+        <h3>Resume</h3>
+        <div class="file-row">
+          <div class="file-input" id="fileName">No file selected</div>
+          <button class="btn" id="chooseBtn">Choose</button>
+          <input type="file" id="resumeUpload" accept=".pdf,.docx,.txt">
+        </div>
+
+        <h3 style="margin-top:16px">Job Description</h3>
+        <textarea id="jobDescription" placeholder="Paste job description here"></textarea>
+
+        <div class="controls" style="margin-top:12px;display:flex;justify-content:space-between">
+          <button class="btn" id="exportBtn">Export CSV</button>
+          <button class="btn primary" id="analyzeBtn">Analyze</button>
+        </div>
+
+        <div id="status" class="muted" style="margin-top:10px"></div>
+      </section>
+
+      <!-- Right -->
+      <section class="card">
+        <h3>Analysis Results</h3>
+
+        <div class="tiles">
+          <div class="tile"><h3 id="matchedCount">-</h3><p>Matched</p></div>
+          <div class="tile"><h3 id="missingCount">-</h3><p>Missing</p></div>
+          <div class="tile"><h3 id="resumeCount">-</h3><p>Resume Keywords</p></div>
+        </div>
+
+        <h4>Matched</h4>
+        <div id="matchedList" class="chips"></div>
+
+        <h4>Missing</h4>
+        <div id="missingList" class="chips"></div>
+
+        <h4>Extracted from Resume</h4>
+        <div id="resumeList" class="chips" style="max-height:220px;overflow:auto"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.17/mammoth.browser.min.js"></script>
+
+  <script>
+    /* USER ID */
+    if (!localStorage.getItem("rka_userId")) {
+      localStorage.setItem("rka_userId", "user_" + Math.random().toString(36).substring(2, 11));
+    }
+    const USER_ID = localStorage.getItem("rka_userId");
+
+    /* THEME SWITCHER */
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
+    const themeLabel = document.getElementById("themeLabel");
+
+    function setTheme(t){
+      root.setAttribute("data-theme", t);
+      themeLabel.textContent = t === "dark" ? "Dark" : "Light";
+      themeToggle.textContent = t === "dark" ? "🌙" : "🌞";
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      setTheme(localStorage.getItem("rka_theme") || "light");
+    });
+    themeToggle.addEventListener("click", () => {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      setTheme(next);
+      localStorage.setItem("rka_theme", next);
+    });
+
+    /* FILE INPUT */
+    const resumeInput = document.getElementById("resumeUpload");
+    const fileNameEl = document.getElementById("fileName");
+    document.getElementById("chooseBtn").addEventListener("click", ()=> resumeInput.click());
+    resumeInput.addEventListener("change", ()=> {
+      fileNameEl.textContent = resumeInput.files[0]?.name || "No file selected";
+    });
+
+    document.getElementById('analyzeBtn').addEventListener('click', analyzeKeywords);
+    document.getElementById('analyzeTop').addEventListener('click', analyzeKeywords);
+    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+    document.getElementById('helpBtn').addEventListener('click', ()=> alert('Upload a resume and paste a job description.'));
+
+    /* STOPWORDS */
+    const STOPWORDS = new Set(["the","and","a","an","to","for","of","in","on","with","by","from","is","are","be","as","that","this","it","or","at","you","your","we","our","us","will","can","should","must","experience","years","year","knowledge","knowledgeable","including"]);
+
+    async function analyzeKeywords(){
+      const status = document.getElementById('status');
+      status.textContent = '';
+      const file = resumeInput.files[0];
+      const jobText = document.getElementById('jobDescription').value || '';
+
+      if(!file){ status.textContent = 'Please choose a resume file.'; return; }
+      if(!jobText.trim()){ status.textContent = 'Please paste a job description.'; return; }
+
+      status.textContent = 'Extracting resume text…';
+      let resumeText = '';
+      try{
+        if(file.name.toLowerCase().endsWith('.pdf')) resumeText = await extractPDFText(file);
+        else if(file.name.toLowerCase().endsWith('.docx')) resumeText = await extractDOCXText(file);
+        else resumeText = await file.text();
+      } catch(err){
+        console.error(err);
+        status.textContent = 'Failed to extract resume text.';
+        return;
+      }
+
+      status.textContent = 'Extracting keywords…';
+      const resumeKeywords = extractKeywords(resumeText);
+      const jobKeywords = extractKeywords(jobText);
+
+      const matched = jobKeywords.filter(k => resumeKeywords.includes(k));
+      const missing = jobKeywords.filter(k => !resumeKeywords.includes(k));
+
+      renderResults(resumeKeywords, jobKeywords, matched, missing);
+      status.textContent = `Done — ${matched.length} matched, ${missing.length} missing.`;
+
+      try {
+        await fetch('/api/saveAnalysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: USER_ID,
+            resumeName: file.name,
+            jobTitle: jobText.split("\n")[0] || '',
+            thumbnail: '/assets/images.jfif',
+            matched,
+            missing,
+            resumeKeywords
+          })
+        });
+      } catch {}
+    }
+
+    async function extractPDFText(file){
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+      let text = '';
+      for(let i=1;i<=pdf.numPages;i++){
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(it => it.str).join(' ') + '\n';
+      }
+      return text;
+    }
+
+    async function extractDOCXText(file){
+      const buffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({arrayBuffer: buffer});
+      return result.value;
+    }
+
+    function extractKeywords(text){
+      if(!text) return [];
+      const lower = text.toLowerCase().replace(/\r|\n/g,' ').replace(/[“”‘’]/g,' ');
+
+      const multi = [
+        'machine learning','deep learning','data science','project management',
+        'react native','node js','express js','sql server','postgresql','mongo db',
+        'docker compose','micro services','cloud native','continuous integration',
+        'continuous deployment','ci/cd'
+      ];
+
+      const phrases = multi.filter(p => lower.includes(p));
+
+      const tokens = lower.match(/\b[a-z0-9+#.+-]{2,}\b/g) || [];
+      const cleaned = tokens.map(t => t.replace(/(^\W+|\W+$)/g,''))
+                            .filter(Boolean)
+                            .filter(t => !STOPWORDS.has(t));
+
+      const normalized = cleaned.map(w => {
+        if(w.endsWith('ing')) return w.slice(0,-3);
+        if(w.endsWith('ment')) return w.slice(0,-4);
+        if(w.endsWith('ies')) return w.slice(0,-3)+'y';
+        if(w.endsWith('s') && w.length>3) return w.slice(0,-1);
+        return w;
+      });
+
+      const unique = Array.from(new Set([...phrases, ...normalized]));
+      unique.sort((a,b) => b.length - a.length);
+      return unique;
+    }
+
+    function renderResults(resumeKeywords, jobKeywords, matched, missing){
+      document.getElementById('matchedCount').textContent = matched.length;
+      document.getElementById('missingCount').textContent = missing.length;
+      document.getElementById('resumeCount').textContent = resumeKeywords.length;
+
+      const mk = document.getElementById('matchedList'); mk.innerHTML = '';
+      matched.forEach(k => {
+        mk.innerHTML += `<div class="chip match">${k}</div>`;
+      });
+
+      const mg = document.getElementById('missingList'); mg.innerHTML = '';
+      missing.forEach(k => {
+        mg.innerHTML += `<div class="chip miss">${k}</div>`;
+      });
+
+      const rk = document.getElementById('resumeList'); rk.innerHTML = '';
+      resumeKeywords.slice(0,200).forEach(k => {
+        rk.innerHTML += `<div class="chip">${k}</div>`;
+      });
+    }
+
+    function exportCSV(){
+      const matched = Array.from(document.getElementById('matchedList').children).map(c => c.textContent);
+      const missing = Array.from(document.getElementById('missingList').children).map(c => c.textContent);
+
+      const rows = [['Type','Keyword']]
+        .concat(matched.map(m => ['matched', m]))
+        .concat(missing.map(m => ['missing', m]));
+
+      const csv = rows.map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
+
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'keywords.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+  </script>
+</body>
+</html>
